@@ -1,9 +1,14 @@
 const express = require("express");
 const dotenv = require("dotenv").config();
+const { errorHandler } = require("./middleware/error");
 
 const PORT = process.env.PORT || 8000;
 
 const app = express();
+
+// Middleware
+app.use(express.json()); // this will allow me to send raw json data.
+app.use(express.urlencoded({ extended: false })); // this will allow me to send urlencoded data.
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Local connection is working." });
@@ -11,5 +16,7 @@ app.get("/", (req, res) => {
 
 // Routes
 app.use("/api/users", require("./routes/user"));
+
+app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
