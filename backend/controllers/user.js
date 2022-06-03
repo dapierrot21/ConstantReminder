@@ -6,17 +6,19 @@ const User = require("../models/user");
 // @route: /api/users
 // @access Public
 const registerUser = asyncHandler(async (req, res) => {
+  // Incoming values from the request body sent from client side.
   const { name, email, password } = req.body;
 
-  //Validation
+  // Validates those values
   if (!name || !email || !password) {
     res.status(400);
     throw new Error("Please enter all fields.");
   }
 
-  // Does user exist.
+  // Check if the client request body values already exist in database.
   const userExists = await User.findOne({ email });
 
+  // If so let the client know.
   if (userExists) {
     res.status(400);
     throw new Error("User already exists");
@@ -24,13 +26,13 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // Hash Password
   const salt = await bcrypt.genSalt(10);
-  const hasdedPassword = await bcrypt.hash(password, salt);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
-  // New User
+  // Create new user
   const user = await User.create({
     name,
     email,
-    password: hasdedPassword,
+    password: hashedPassword,
   });
 
   if (user) {
